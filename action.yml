@@ -33,6 +33,36 @@ inputs:
     required: false
     default: ""
 
+  notebooklm_upload:
+    description: "Upload NOTEBOOKLM.md to Google NotebookLM after generation."
+    required: false
+    default: "false"
+
+  notebooklm_project_number:
+    description: "GCP project number for the NotebookLM upload."
+    required: false
+    default: ""
+
+  notebooklm_notebook_id:
+    description: "NotebookLM notebook ID (from the notebook URL)."
+    required: false
+    default: ""
+
+  notebooklm_location:
+    description: "GCP resource location (default: global)."
+    required: false
+    default: "global"
+
+  notebooklm_endpoint_location:
+    description: "Discovery Engine endpoint location (default: global)."
+    required: false
+    default: "global"
+
+  notebooklm_sa_key:
+    description: "Service account key JSON string for Google auth."
+    required: false
+    default: ""
+
 runs:
   using: "composite"
   steps:
@@ -46,6 +76,12 @@ runs:
       run: |
         pip install --quiet httpx>=0.27 pyyaml>=6.0
 
+    - name: "Install NotebookLM upload dependencies"
+      if: ${{ inputs.notebooklm_upload == 'true' }}
+      shell: bash
+      run: |
+        pip install --quiet "google-auth>=2.0" requests>=2.31
+
     - name: "Run docforge"
       shell: bash
       env:
@@ -57,6 +93,13 @@ runs:
         # GitHub Models: prefer explicit api_key, fall back to the automatic token.
         GITHUB_TOKEN: ${{ inputs.api_key || inputs.anthropic_api_key || github.token }}
         GITHUB_ACTION_PATH: ${{ github.action_path }}
+        # NotebookLM upload
+        NOTEBOOKLM_UPLOAD: ${{ inputs.notebooklm_upload }}
+        NOTEBOOKLM_PROJECT_NUMBER: ${{ inputs.notebooklm_project_number }}
+        NOTEBOOKLM_NOTEBOOK_ID: ${{ inputs.notebooklm_notebook_id }}
+        NOTEBOOKLM_LOCATION: ${{ inputs.notebooklm_location }}
+        NOTEBOOKLM_ENDPOINT_LOCATION: ${{ inputs.notebooklm_endpoint_location }}
+        NOTEBOOKLM_SA_KEY_JSON: ${{ inputs.notebooklm_sa_key }}
       run: |
         ARGS=(
           --config "${{ inputs.config }}"

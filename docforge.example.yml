@@ -68,6 +68,23 @@ output:
   # footer, optimized for import into Google NotebookLM.
   notebooklm: true
 
+# ─── NotebookLM Upload ──────────────────────────────────────────────────────
+# Optional: automatically upload NOTEBOOKLM.md to a Google NotebookLM notebook
+# after generation. Requires google-auth + requests: pip install google-auth requests
+#
+# Credentials (choose one):
+#   - Set NOTEBOOKLM_SA_KEY_JSON env var to the service account key JSON string.
+#   - Set GOOGLE_APPLICATION_CREDENTIALS env var to a key file path.
+#   In GitHub Actions, store the key JSON as a repository secret and pass it via
+#   the notebooklm_sa_key action input (see templates/workflow.yml for an example).
+#
+# notebooklm_upload:
+#   enabled: false
+#   project_number: ""        # GCP project number (not project ID)
+#   notebook_id: ""           # Notebook ID from the NotebookLM URL
+#   location: "global"        # GCP resource location
+#   endpoint_location: "global"  # Discovery Engine endpoint location
+
 # ─── Prompts ────────────────────────────────────────────────────────────────
 prompts:
   # Paths to the system prompt markdown files.

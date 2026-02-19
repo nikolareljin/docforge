@@ -231,10 +231,47 @@ def main() -> None:
             f"[docforge] Written: {out}  ({result.input_tokens}→{result.output_tokens} tokens)"
         )
 
+    notebooklm_path: str = ""
     if out_cfg.get("notebooklm", True) and (developer_text or user_guide_text):
         source = str(Path(repo_path).name)
-        out = writer.write_notebooklm(developer_text, user_guide_text, source)
-        _log(f"[docforge] Written: {out}  (combined NotebookLM export)")
+        notebooklm_path = writer.write_notebooklm(
+            developer_text, user_guide_text, source
+        )
+        _log(f"[docforge] Written: {notebooklm_path}  (combined NotebookLM export)")
+
+    # ── NotebookLM upload ─────────────────────────────────────────────────────
+    upload_cfg = config.get("notebooklm_upload", {})
+    upload_enabled = upload_cfg.get("enabled", False) or (
+        os.environ.get("NOTEBOOKLM_UPLOAD", "").lower() == "true"
+    )
+    if upload_enabled and notebooklm_path:
+        project_number = upload_cfg.get("project_number") or os.environ.get(
+            "NOTEBOOKLM_PROJECT_NUMBER", ""
+        )
+        notebook_id = upload_cfg.get("notebook_id") or os.environ.get(
+            "NOTEBOOKLM_NOTEBOOK_ID", ""
+        )
+        location = upload_cfg.get("location") or os.environ.get(
+            "NOTEBOOKLM_LOCATION", "global"
+        )
+        endpoint_location = upload_cfg.get("endpoint_location") or os.environ.get(
+            "NOTEBOOKLM_ENDPOINT_LOCATION", "global"
+        )
+        _log(f"[docforge] Uploading {Path(notebooklm_path).name} to NotebookLM...")
+        try:
+            from src.notebooklm import upload_to_notebooklm
+
+            result = upload_to_notebooklm(
+                file_path=notebooklm_path,
+                project_number=project_number,
+                notebook_id=notebook_id,
+                location=location,
+                endpoint_location=endpoint_location,
+            )
+            _log(f"[docforge] NotebookLM upload complete: {result}")
+        except (ImportError, ValueError) as exc:
+            print(f"error: NotebookLM upload failed: {exc}", file=sys.stderr)
+            sys.exit(1)
 
     _log("[docforge] Done.")
 

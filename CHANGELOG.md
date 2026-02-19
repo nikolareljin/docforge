@@ -8,6 +8,17 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+- **NotebookLM auto-upload** (`src/notebooklm.py`) — after generating `NOTEBOOKLM.md`,
+  optionally upload it directly to a Google NotebookLM notebook via the Discovery
+  Engine API. Enabled by setting `notebooklm_upload.enabled: true` in `.docforge.yml`
+  or `NOTEBOOKLM_UPLOAD=true` in the environment.
+- **`action.yml` NotebookLM inputs** — `notebooklm_upload`, `notebooklm_project_number`,
+  `notebooklm_notebook_id`, `notebooklm_location`, `notebooklm_endpoint_location`,
+  `notebooklm_sa_key`; Google auth deps installed only when upload is enabled.
+- **`templates/workflow.yml`** — commented-out NotebookLM upload block with
+  step-by-step prerequisites for consumer repositories.
+
 ## [0.1.0] — 2026-02-18
 
 ### Added

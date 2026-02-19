@@ -61,6 +61,22 @@ jobs:
           config: .docforge.yml
           only: both
 
+          # ── NotebookLM upload (optional) ─────────────────────────────────────
+          # Uncomment the block below to upload NOTEBOOKLM.md to Google NotebookLM
+          # after each documentation run.
+          #
+          # Prerequisites:
+          #   1. Create a GCP service account with the "Discovery Engine Editor" role.
+          #   2. Download its JSON key and add it as a repository secret named
+          #      NOTEBOOKLM_SA_KEY (Settings → Secrets → Actions).
+          #   3. Find your project number in the GCP console (not the project ID).
+          #   4. Find your notebook ID in the NotebookLM URL.
+          #
+          # notebooklm_upload: "true"
+          # notebooklm_project_number: "123456789012"
+          # notebooklm_notebook_id: "your-notebook-id"
+          # notebooklm_sa_key: ${{ secrets.NOTEBOOKLM_SA_KEY }}
+
       - name: "Commit generated documentation"
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
