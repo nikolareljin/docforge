@@ -2,6 +2,10 @@ name: "docforge"
 description: "Generate developer and end-user documentation from a codebase."
 author: "Nikola Reljin"
 
+branding:
+  icon: "book-open"
+  color: "blue"
+
 inputs:
   api_key:
     description: "API key for the LLM provider (sets DOCFORGE_API_KEY)."
