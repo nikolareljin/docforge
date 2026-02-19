@@ -1,0 +1,70 @@
+# .github/workflows/docs.yml
+# Auto-generate developer and end-user documentation via docforge.
+# Add this file to your repository's .github/workflows/ directory.
+#
+# Requirements:
+#   1. No secrets needed for the default GitHub provider — GITHUB_TOKEN is
+#      supplied automatically by GitHub Actions.
+#      To use a different provider, add its key as a repository secret
+#      (Settings → Secrets → Actions) and set api_key: ${{ secrets.YOUR_KEY }}.
+#   2. Place a .docforge.yml config file in your repository root.
+#      (Copy from vendor/docforge/docforge.example.yml and customize.)
+#   3. If using docforge as a git submodule at vendor/docforge, it will be
+#      available automatically. Otherwise, the workflow checks it out inline.
+
+name: "Generate Documentation"
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths-ignore:
+      # Prevent documentation commits from re-triggering this workflow.
+      - "docs/DEVELOPER.md"
+      - "docs/USER_GUIDE.md"
+      - "docs/NOTEBOOKLM.md"
+      - "**.md"
+
+  # Allow manual runs from the Actions tab.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for git log context
+          submodules: recursive
+
+      # Only needed if docforge is NOT a git submodule in this repo.
+      # If vendor/docforge already exists (submodule), this step is skipped.
+      - name: "Checkout docforge (if not a submodule)"
+        if: ${{ !hashFiles('vendor/docforge/generate.py') }}
+        uses: actions/checkout@v4
+        with:
+          repository: nikolareljin/docforge
+          path: vendor/docforge
+
+      - name: "Generate documentation"
+        uses: ./vendor/docforge
+        with:
+          # api_key is optional — the default GitHub provider uses GITHUB_TOKEN automatically.
+          # Uncomment and set a secret to switch providers (e.g. GROQ_API_KEY, ANTHROPIC_API_KEY).
+          # api_key: ${{ secrets.GROQ_API_KEY }}
+          config: .docforge.yml
+          only: both
+
+      - name: "Commit generated documentation"
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: regenerate documentation [skip ci]"
+          file_pattern: "docs/DEVELOPER.md docs/USER_GUIDE.md docs/NOTEBOOKLM.md"
+          commit_user_name: "docforge[bot]"
+          commit_user_email: "docforge[bot]@users.noreply.github.com"

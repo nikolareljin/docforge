@@ -1,0 +1,48 @@
+name: "Self Documentation"
+
+on:
+  push:
+    branches: ["main"]
+    paths-ignore:
+      - "docs/DEVELOPER.md"
+      - "docs/USER_GUIDE.md"
+      - "docs/NOTEBOOKLM.md"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  self-docs:
+    name: "Generate docforge's own documentation"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: "Install dependencies"
+        run: pip install --quiet httpx>=0.27 pyyaml>=6.0
+
+      - name: "Run docforge on itself"
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python generate.py \
+            --config docforge.example.yml \
+            --repo-path . \
+            --only both
+
+      - name: "Commit generated documentation"
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: regenerate self-documentation [skip ci]"
+          file_pattern: "docs/DEVELOPER.md docs/USER_GUIDE.md docs/NOTEBOOKLM.md"
+          commit_user_name: "docforge[bot]"
+          commit_user_email: "docforge[bot]@users.noreply.github.com"

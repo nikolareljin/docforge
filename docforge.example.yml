@@ -1,0 +1,77 @@
+# docforge configuration
+# Copy this file to .docforge.yml in your repository root and customize as needed.
+
+# ─── Project Identity ───────────────────────────────────────────────────────
+project:
+  # Human-readable name used in generated documentation headers.
+  name: "My Project"
+
+  # Short description shown in the generated docs introduction.
+  description: "A brief description of what this project does."
+
+  # Primary language / framework (used to guide the analyzer and prompts).
+  # Examples: python, go, node, php, rust, ruby
+  language: "python"
+
+# ─── AI Provider ────────────────────────────────────────────────────────────
+ai:
+  # LLM provider to use.
+  # Options: github | groq | anthropic | openai_compat | together | openrouter | ollama | bedrock
+  provider: "github"
+
+  # Model identifier passed to the provider.
+  # github examples:     gpt-4o, gpt-4o-mini, meta/Llama-3.3-70B-Instruct
+  # groq examples:       llama-3.3-70b-versatile, mixtral-8x7b-32768
+  # anthropic examples:  claude-opus-4-6, claude-sonnet-4-5-20250929
+  # ollama examples:     qwen2.5:72b, llama3.3:70b
+  model: "gpt-4o"
+
+  # Maximum tokens in the model response. Increase for very large codebases.
+  max_tokens: 8192
+
+  # base_url: ""          # Required only for provider: openai_compat (custom endpoint)
+  # aws_region: "us-east-1"  # AWS Bedrock only
+  # aws_profile: ""          # AWS Bedrock only (default credential chain if omitted)
+  # api_key: ""              # Avoid hardcoding; prefer env vars (see README)
+
+# ─── Context Assembly ───────────────────────────────────────────────────────
+context:
+  # Maximum context size to send to the LLM, in kilobytes.
+  # Stay well under the model's context window to leave room for the system prompt and response.
+  max_context_kb: 128
+
+  # Priority-ordered list of context sections to include.
+  # Sections are added in this order until max_context_kb is reached.
+  # Remove sections you don't want included in the analysis.
+  sections:
+    - readme          # README.md / README.rst / README.txt
+    - manifests       # package.json, pyproject.toml, go.mod, Cargo.toml, composer.json
+    - routes          # FastAPI/Flask/Express/Gin route definitions
+    - cli             # Click/Cobra/argparse CLI command definitions
+    - config          # .env.example, config files, settings modules
+    - tests           # test files (sample, not all)
+    - docker          # Dockerfile, docker-compose.yml
+    - makefile        # Makefile targets
+    - scripts         # shell scripts in scripts/
+    - git_log         # recent git commit messages (last 30)
+
+# ─── Output ─────────────────────────────────────────────────────────────────
+output:
+  # Directory (relative to repo root) where generated docs are written.
+  dir: "docs"
+
+  # Which documents to generate.
+  # Options: developer, user, both
+  generate: "both"
+
+  # Whether to also write NOTEBOOKLM.md — a combined file with source attribution
+  # footer, optimized for import into Google NotebookLM.
+  notebooklm: true
+
+# ─── Prompts ────────────────────────────────────────────────────────────────
+prompts:
+  # Paths to the system prompt markdown files.
+  # If using docforge as a git submodule at vendor/docforge, leave these as defaults.
+  # Override to use your own customized prompts.
+  developer: "vendor/docforge/prompts/developer.md"
+  enduser: "vendor/docforge/prompts/enduser.md"

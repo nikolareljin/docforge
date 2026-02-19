@@ -1,0 +1,69 @@
+name: "docforge"
+description: "Generate developer and end-user documentation from a codebase."
+author: "Nikola Reljin"
+
+inputs:
+  api_key:
+    description: "API key for the LLM provider (sets DOCFORGE_API_KEY)."
+    required: false
+    default: ""
+
+  anthropic_api_key:
+    description: "Deprecated: use api_key instead."
+    required: false
+    default: ""
+
+  config:
+    description: "Path to the .docforge.yml config file (relative to repo root)."
+    required: false
+    default: ".docforge.yml"
+
+  repo_path:
+    description: "Path to the repository to document."
+    required: false
+    default: "."
+
+  only:
+    description: "Which documents to generate: developer, user, or both."
+    required: false
+    default: "both"
+
+  output_dir:
+    description: "Override the output directory (relative to repo_path)."
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Set up Python"
+      uses: "actions/setup-python@v5"
+      with:
+        python-version: "3.11"
+
+    - name: "Install docforge dependencies"
+      shell: bash
+      run: |
+        pip install --quiet httpx>=0.27 pyyaml>=6.0
+
+    - name: "Run docforge"
+      shell: bash
+      env:
+        # Provider-agnostic key — picked up by all named providers as fallback.
+        DOCFORGE_API_KEY: ${{ inputs.api_key || inputs.anthropic_api_key }}
+        # Provider-specific vars so each provider's primary lookup succeeds.
+        GROQ_API_KEY: ${{ inputs.api_key || inputs.anthropic_api_key }}
+        ANTHROPIC_API_KEY: ${{ inputs.api_key || inputs.anthropic_api_key }}
+        # GitHub Models: prefer explicit api_key, fall back to the automatic token.
+        GITHUB_TOKEN: ${{ inputs.api_key || inputs.anthropic_api_key || github.token }}
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
+      run: |
+        ARGS=(
+          --config "${{ inputs.config }}"
+          --repo-path "${{ inputs.repo_path }}"
+          --only "${{ inputs.only }}"
+        )
+        if [ -n "${{ inputs.output_dir }}" ]; then
+          ARGS+=(--output-dir "${{ inputs.output_dir }}")
+        fi
+        python "${{ github.action_path }}/generate.py" "${ARGS[@]}"

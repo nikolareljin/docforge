@@ -1,0 +1,34 @@
+name: "CI"
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  lint:
+    name: "Lint"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: "Install ruff"
+        run: pip install --quiet ruff
+
+      - name: "ruff check"
+        run: ruff check generate.py src/
+
+      - name: "ruff format check"
+        run: ruff format --check generate.py src/
+
+      - name: "Install shellcheck"
+        run: sudo apt-get install -y --quiet shellcheck
+
+      - name: "shellcheck install.sh"
+        run: shellcheck install.sh
