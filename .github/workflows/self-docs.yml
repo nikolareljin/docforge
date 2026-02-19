@@ -1,12 +1,6 @@
 name: "Self Documentation"
 
 on:
-  push:
-    branches: ["main"]
-    paths-ignore:
-      - "docs/DEVELOPER.md"
-      - "docs/USER_GUIDE.md"
-      - "docs/NOTEBOOKLM.md"
   workflow_dispatch:
 
 permissions:
@@ -32,7 +26,7 @@ jobs:
 
       - name: "Run docforge on itself"
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           python generate.py \
             --config docforge.example.yml \
