@@ -1,8 +1,11 @@
 # docforge
 
-Auto-generate developer and end-user documentation from any codebase. Triggered by GitHub Actions on push to main/master. Output is optimized for [Google NotebookLM](https://notebooklm.google.com/) import.
+Auto-generate developer and end-user documentation from any codebase.
+Triggered by GitHub Actions on push to main/master. Output is optimized for
+[Google NotebookLM](https://notebooklm.google.com/) import.
 
 Designed to be vendored as a git submodule into any repository in your ecosystem.
+No API key secrets needed — the default provider uses `GITHUB_TOKEN` automatically.
 
 ---
 
@@ -19,7 +22,8 @@ Or if docforge is already cloned locally:
 /path/to/docforge/install.sh --target /path/to/your-repo
 ```
 
-This adds docforge as a git submodule at `vendor/docforge`, creates `.docforge.yml`, and adds the GitHub Actions workflow.
+This adds docforge as a git submodule at `vendor/docforge`, creates `.docforge.yml`,
+and adds the GitHub Actions workflow.
 
 ---
 
@@ -45,7 +49,7 @@ git commit -m "chore: add docforge documentation generator"
 
 ## Configuration
 
-Edit `.docforge.yml` in your repo root. All fields are optional — sensible defaults are used for anything omitted.
+Edit `.docforge.yml` in your repo root. All fields are optional.
 
 ```yaml
 project:
@@ -54,7 +58,8 @@ project:
   language: "python"   # python, go, node, php, rust, ruby, ...
 
 ai:
-  model: "claude-opus-4-6"
+  provider: "github"   # default — uses GITHUB_TOKEN automatically
+  model: "gpt-4o"
   max_tokens: 8192
 
 context:
@@ -75,21 +80,35 @@ output:
   dir: "docs"          # output directory (relative to repo root)
   generate: "both"     # developer | user | both
   notebooklm: true     # also write NOTEBOOKLM.md
-
-prompts:
-  developer: "vendor/docforge/prompts/developer.md"
-  enduser: "vendor/docforge/prompts/enduser.md"
 ```
 
 See [`docforge.example.yml`](docforge.example.yml) for the fully-commented version.
 
 ---
 
+## Supported LLM Providers
+
+| Provider | Key | Notes |
+|---|---|---|
+| `github` | `GITHUB_TOKEN` (auto) | **Default.** Free, no setup. |
+| `groq` | `GROQ_API_KEY` | Free tier, fast. |
+| `anthropic` | `ANTHROPIC_API_KEY` | Claude models. |
+| `together` | `TOGETHER_API_KEY` | Open-source models. |
+| `openrouter` | `OPENROUTER_API_KEY` | Multi-provider routing. |
+| `ollama` | _(none)_ | Local inference. |
+| `openai_compat` | `DOCFORGE_API_KEY` | Any `/chat/completions` endpoint. |
+| `bedrock` | AWS credentials | Anthropic + Llama on AWS. |
+
+---
+
 ## GitHub Actions Setup
 
-1. Add `ANTHROPIC_API_KEY` as a repository secret (Settings → Secrets → Actions).
-2. The workflow at `.github/workflows/docs.yml` runs on every push to `main`/`master`.
-3. Generated docs are committed back to the repository automatically.
+1. The workflow at `.github/workflows/docs.yml` runs on every push to `main`/`master`.
+2. No secrets are required for the default GitHub provider — `GITHUB_TOKEN` is
+   provided automatically by the Actions runner.
+3. To use a different provider, add its API key as a repository secret and pass
+   it via `api_key:` in the workflow step.
+4. Generated docs are committed back to the repository automatically.
 
 The workflow uses `paths-ignore` on the generated doc files to prevent infinite loops.
 
@@ -100,14 +119,20 @@ The workflow uses `paths-ignore` on the generated doc files to prevent infinite 
 ```bash
 pip install httpx pyyaml
 
-# Run from your project root (with docforge as a submodule):
-ANTHROPIC_API_KEY=sk-ant-... python vendor/docforge/generate.py
+# Default provider (GitHub Models)
+GITHUB_TOKEN=ghp_... python vendor/docforge/generate.py
 
-# Or from any directory with explicit paths:
-ANTHROPIC_API_KEY=sk-ant-... python /path/to/docforge/generate.py \
-  --config /path/to/repo/.docforge.yml \
+# Groq
+GROQ_API_KEY=gsk_... python vendor/docforge/generate.py
+
+# Ollama (no key needed)
+python vendor/docforge/generate.py
+
+# Explicit options
+python vendor/docforge/generate.py \
+  --config .docforge.yml \
   --repo-path /path/to/repo \
-  --output-dir /tmp/docs
+  --only developer
 ```
 
 ### CLI Options
@@ -118,69 +143,39 @@ ANTHROPIC_API_KEY=sk-ant-... python /path/to/docforge/generate.py \
 | `--repo-path PATH` | `.` | Repository to analyze |
 | `--output-dir PATH` | from config | Override output directory |
 | `--only developer\|user\|both` | from config | Which docs to generate |
-| `--api-key KEY` | `$ANTHROPIC_API_KEY` | API key |
+| `--api-key KEY` | env var | API key (sets `DOCFORGE_API_KEY`) |
 
 ---
 
 ## Output Files
 
-All files are written to the `docs/` directory (or `output.dir` in config):
-
 | File | Description |
 |------|-------------|
-| `docs/DEVELOPER.md` | Technical reference for developers: setup, architecture, API, testing |
-| `docs/USER_GUIDE.md` | Plain-language guide for end users: features, how-tos, troubleshooting |
+| `docs/DEVELOPER.md` | Technical reference: setup, architecture, API, testing |
+| `docs/USER_GUIDE.md` | Plain-language guide: features, how-tos, troubleshooting |
 | `docs/NOTEBOOKLM.md` | Combined file with source footer, optimized for NotebookLM import |
 
 ---
 
-## NotebookLM Export
+## NotebookLM
 
-1. After generation, open [notebooklm.google.com](https://notebooklm.google.com/)
-2. Create a new notebook
-3. Click **Add source** → **Upload file**
-4. Upload `docs/NOTEBOOKLM.md`
-5. NotebookLM will index both the developer reference and user guide, enabling natural-language Q&A over your documentation
+### Manual import
 
----
+1. Open [notebooklm.google.com](https://notebooklm.google.com/) and create a notebook.
+2. Click **Add source → Upload file**.
+3. Upload `docs/NOTEBOOKLM.md`.
 
-## Custom Prompts
+### Auto-upload
 
-To customize the documentation style, copy the prompts and edit them:
-
-```bash
-cp vendor/docforge/prompts/developer.md prompts/developer.md
-cp vendor/docforge/prompts/enduser.md prompts/enduser.md
-```
-
-Then update `.docforge.yml`:
-
-```yaml
-prompts:
-  developer: "prompts/developer.md"
-  enduser: "prompts/enduser.md"
-```
+docforge can push `NOTEBOOKLM.md` directly to NotebookLM after generation.
+See [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md#notebooklm-auto-upload) for setup.
 
 ---
 
-## Context Sections
+## Documentation
 
-docforge analyzes your repository and assembles context in priority order:
-
-| Section | What it includes |
-|---------|-----------------|
-| `readme` | README.md / README.rst / README.txt |
-| `manifests` | package.json, pyproject.toml, go.mod, Cargo.toml, etc. |
-| `routes` | HTTP route definitions (FastAPI, Flask, Express, Gin, etc.) |
-| `cli` | CLI command definitions (Click, Cobra, argparse, etc.) |
-| `config` | .env.example, config files, settings modules |
-| `tests` | Sample test files |
-| `docker` | Dockerfile, docker-compose.yml |
-| `makefile` | Makefile targets |
-| `scripts` | Shell scripts in scripts/ |
-| `git_log` | Last 30 commit messages |
-
-Sections are included in order until `max_context_kb` is reached.
+- [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md) — installation, configuration, provider examples, troubleshooting
+- [`docs/DEVELOPER.md`](docs/DEVELOPER.md) — architecture, module reference, contributing
 
 ---
 
@@ -189,7 +184,7 @@ Sections are included in order until `max_context_kb` is reached.
 - Python 3.9+
 - `httpx>=0.27`
 - `pyyaml>=6.0`
-- An API key (`ANTHROPIC_API_KEY`)
+- An LLM provider (default: GitHub Models via `GITHUB_TOKEN`)
 
 ---
 
