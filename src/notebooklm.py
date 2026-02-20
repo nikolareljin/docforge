@@ -75,6 +75,7 @@ def upload_to_notebooklm(
     endpoint_location: str = "global",
     sa_key_path: str | None = None,
     sa_key_json: str | None = None,
+    source_prefix: str = "",
     timeout: int = 120,
 ) -> dict:
     """Upload a markdown file to a Google NotebookLM notebook as a source.
@@ -87,6 +88,9 @@ def upload_to_notebooklm(
         endpoint_location: Discovery Engine endpoint location (default: ``global``).
         sa_key_path:       Path to a service account JSON key file.
         sa_key_json:       Service account key as a JSON string.
+        source_prefix:     Prefix to prepend to the filename (e.g. ``myrepo-``).
+                           Useful when uploading docs from multiple repos to a
+                           single notebook. Default: no prefix.
         timeout:           HTTP request timeout in seconds.
 
     Returns:
@@ -113,11 +117,16 @@ def upload_to_notebooklm(
     file_path_obj = Path(file_path)
     content = file_path_obj.read_bytes()
 
+    # Prepend source_prefix to the filename if provided
+    upload_filename = (
+        f"{source_prefix}{file_path_obj.name}" if source_prefix else file_path_obj.name
+    )
+
     response = httpx.post(
         url,
         headers={
             "Authorization": f"Bearer {token}",
-            "X-Goog-Upload-File-Name": file_path_obj.name,
+            "X-Goog-Upload-File-Name": upload_filename,
             "X-Goog-Upload-Protocol": "raw",
             "Content-Type": "text/markdown",
         },

@@ -9,6 +9,24 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 
 ### Added
+- **Docker support** — `Dockerfile`, `docker-entrypoint.sh`, `.dockerignore` for
+  containerized documentation generation. Image published to `ghcr.io/nikolareljin/docforge`.
+  Volume mounts: `/repo` (source), `/output` (docs). See `docs/DOCKER.md` for full usage.
+- **`.github/workflows/docker.yml`** — builds and publishes Docker image on push to main
+  and on release tags. Uses GitHub Container Registry with cache layers for fast builds.
+- **Multi-repo NotebookLM support** — `source_prefix` parameter in `upload_to_notebooklm()`
+  prepends a prefix to the uploaded filename (e.g. `myrepo-NOTEBOOKLM.md`). Enables
+  uploading docs from multiple repos to a single notebook with namespacing.
+- **`notebooklm_source_prefix` action input** — exposed in `action.yml`; set to
+  `${{ github.event.repository.name }}-` for automatic per-repo prefixing.
+- **`requirements.txt`** — added `google-auth>=2.0` and `requests>=2.31` as core
+  dependencies (NotebookLM upload now always available, not just when conditionally
+  installed in Actions).
+- **`docs/DOCKER.md`** — comprehensive Docker usage guide: quick start, volume mounts,
+  all provider examples (GitHub, Groq, Anthropic, Ollama, Bedrock), NotebookLM upload,
+  CI/CD integration (GitLab, Jenkins), troubleshooting.
+
+### Added (from previous unreleased)
 - **NotebookLM auto-upload** (`src/notebooklm.py`) — after generating `NOTEBOOKLM.md`,
   optionally upload it directly to a Google NotebookLM notebook via the Discovery
   Engine API. Enabled by setting `notebooklm_upload.enabled: true` in `.docforge.yml`

@@ -84,6 +84,9 @@ output:
 #   notebook_id: ""           # Notebook ID from the NotebookLM URL
 #   location: "global"        # GCP resource location
 #   endpoint_location: "global"  # Discovery Engine endpoint location
+#   source_prefix: ""         # Prefix for uploaded filename (e.g. "myrepo-")
+#                             # Useful when uploading docs from multiple repos to
+#                             # a single notebook — each repo gets a unique prefix
 
 # ─── Prompts ────────────────────────────────────────────────────────────────
 prompts:

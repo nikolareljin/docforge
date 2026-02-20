@@ -67,6 +67,11 @@ inputs:
     required: false
     default: ""
 
+  notebooklm_source_prefix:
+    description: "Prefix for the uploaded filename (e.g. 'myrepo-'). Useful when uploading docs from multiple repos to a single notebook."
+    required: false
+    default: ""
+
 runs:
   using: "composite"
   steps:
@@ -103,6 +108,7 @@ runs:
         NOTEBOOKLM_NOTEBOOK_ID: ${{ inputs.notebooklm_notebook_id }}
         NOTEBOOKLM_LOCATION: ${{ inputs.notebooklm_location }}
         NOTEBOOKLM_ENDPOINT_LOCATION: ${{ inputs.notebooklm_endpoint_location }}
+        NOTEBOOKLM_SOURCE_PREFIX: ${{ inputs.notebooklm_source_prefix }}
         NOTEBOOKLM_SA_KEY_JSON: ${{ inputs.notebooklm_sa_key }}
       run: |
         ARGS=(

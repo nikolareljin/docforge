@@ -72,9 +72,19 @@ jobs:
           #   3. Find your project number in the GCP console (not the project ID).
           #   4. Find your notebook ID in the NotebookLM URL.
           #
+          # Single-repo upload:
           # notebooklm_upload: "true"
           # notebooklm_project_number: "123456789012"
           # notebooklm_notebook_id: "your-notebook-id"
+          # notebooklm_sa_key: ${{ secrets.NOTEBOOKLM_SA_KEY }}
+          #
+          # Multi-repo upload (shared notebook):
+          # Add notebooklm_source_prefix to namespace files by repo.
+          # Example: myrepo-NOTEBOOKLM.md, otherrepo-NOTEBOOKLM.md
+          # notebooklm_upload: "true"
+          # notebooklm_project_number: "123456789012"
+          # notebooklm_notebook_id: "your-notebook-id"
+          # notebooklm_source_prefix: "${{ github.event.repository.name }}-"
           # notebooklm_sa_key: ${{ secrets.NOTEBOOKLM_SA_KEY }}
 
       - name: "Commit generated documentation"

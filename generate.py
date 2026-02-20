@@ -257,6 +257,9 @@ def main() -> None:
         endpoint_location = upload_cfg.get("endpoint_location") or os.environ.get(
             "NOTEBOOKLM_ENDPOINT_LOCATION", "global"
         )
+        source_prefix = upload_cfg.get("source_prefix", "") or os.environ.get(
+            "NOTEBOOKLM_SOURCE_PREFIX", ""
+        )
         _log(f"[docforge] Uploading {Path(notebooklm_path).name} to NotebookLM...")
         try:
             from src.notebooklm import upload_to_notebooklm
@@ -267,6 +270,7 @@ def main() -> None:
                 notebook_id=notebook_id,
                 location=location,
                 endpoint_location=endpoint_location,
+                source_prefix=source_prefix,
             )
             _log(f"[docforge] NotebookLM upload complete: {result}")
         except (ImportError, ValueError) as exc:
