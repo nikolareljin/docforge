@@ -11,17 +11,11 @@ import time
 import httpx
 
 from .base import DocProvider, DocResult
+from .http import build_timeout
 
 
 _RETRY_STATUS_CODES = {429, 503, 529}
 _RETRY_DELAY_SECONDS = 10
-
-
-def _build_timeout(total_seconds: int) -> httpx.Timeout:
-    """Use a short connect timeout while preserving long read timeouts."""
-    total = float(total_seconds)
-    connect = min(10.0, max(1.0, total))
-    return httpx.Timeout(total, connect=connect)
 
 
 class OpenAICompatProvider(DocProvider):
@@ -39,7 +33,7 @@ class OpenAICompatProvider(DocProvider):
 
     def generate(self, system: str, user: str, timeout: int = 120) -> DocResult:
         url = f"{self.base_url}/chat/completions"
-        timeout_cfg = _build_timeout(timeout)
+        timeout_cfg = build_timeout(timeout)
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "content-type": "application/json",

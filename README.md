@@ -86,8 +86,11 @@ output:
 
 See [`docforge.example.yml`](docforge.example.yml) for the fully-commented version.
 
-If `.docforge.yml` is missing, docforge falls back to built-in defaults
-(`provider: github`, `model: gpt-4o`) and requires `GITHUB_TOKEN`.
+When running `generate.py` locally without `--config`, if `.docforge.yml` is
+missing, docforge falls back to built-in defaults (`provider: github`,
+`model: gpt-4o`) and requires `GITHUB_TOKEN`.
+The GitHub Action defaults to `config: .docforge.yml`, so it will fail if that
+file is missing unless you override the action `config` input.
 To run with any non-default provider (for example `ollama`), create
 `.docforge.yml` (or pass an explicit config path).
 
