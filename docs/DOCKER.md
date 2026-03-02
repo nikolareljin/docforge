@@ -134,6 +134,7 @@ For `ollama` (local) or `bedrock` (AWS), no key is needed.
 | `CONFIG_FILE` | `/repo/.docforge.yml` | Path to config file |
 | `REPO_PATH` | `/repo` | Repository root inside container |
 | `OUTPUT_DIR` | `/output` | Where to write docs inside container |
+| `DOCFORGE_TIMEOUT_SECONDS` | provider-dependent | Override LLM request timeout (default: `1800` for `ollama`, otherwise `120`) |
 
 ---
 
@@ -205,9 +206,22 @@ Config file:
 ai:
   provider: "ollama"
   model: "qwen2.5:72b"
+  # Optional override. If omitted, ollama defaults to 1800s timeout.
+  timeout_seconds: 1800
 ```
 
 Ollama must be listening on `http://localhost:11434`.
+
+For very slow local models, you can also set a runtime override:
+
+```bash
+docker run --rm \
+  --network host \
+  -v "$(pwd):/repo:ro" \
+  -v "$(pwd)/docs:/output" \
+  -e DOCFORGE_TIMEOUT_SECONDS=3600 \
+  ghcr.io/nikolareljin/docforge:latest
+```
 
 ### AWS Bedrock
 

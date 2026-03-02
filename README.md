@@ -61,6 +61,7 @@ ai:
   provider: "github"   # default — uses GITHUB_TOKEN automatically
   model: "gpt-4o"
   max_tokens: 8192
+  # timeout_seconds: 120  # optional; default is 1800 for ollama, 120 otherwise
 
 context:
   max_context_kb: 128
