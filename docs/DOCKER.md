@@ -21,6 +21,9 @@ docker run --rm \
 
 Docs appear in `./docs/`.
 
+This quick start uses the default provider (`github`), so `GITHUB_TOKEN` must
+be set in your environment.
+
 ---
 
 ## Image Tags
@@ -55,7 +58,7 @@ docker run --rm \
 
 ## Configuration
 
-### Option 1: Config file in the repository (recommended)
+### Option 1: Config file in the repository (recommended; required for non-default behavior)
 
 Place `.docforge.yml` in your repository root:
 
@@ -95,10 +98,10 @@ docker run --rm \
   ghcr.io/nikolareljin/docforge:latest
 ```
 
-### Option 3: Default config (no customization)
+### Option 3: Default config (no `.docforge.yml`)
 
 If no `.docforge.yml` exists, the image uses the built-in default config
-(`docforge.example.yml`). Set the project name via environment variables:
+(`docforge.example.yml`):
 
 ```bash
 docker run --rm \
@@ -108,7 +111,18 @@ docker run --rm \
   ghcr.io/nikolareljin/docforge:latest
 ```
 
-The default provider is `github` with model `gpt-4o`.
+Defaults in this mode:
+- Provider: `github`
+- Model: `gpt-4o`
+- Requirement: `GITHUB_TOKEN` must be set
+
+### When `.docforge.yml` is required
+
+You must provide a config file (in-repo or external via `CONFIG_FILE`) when you
+want anything non-default, for example:
+- `ai.provider: ollama`, `groq`, `anthropic`, `openrouter`, `together`, `bedrock`, or custom `openai_compat`
+- Non-default model selection
+- Custom `timeout_seconds`, context/output settings, or prompt paths
 
 ---
 
@@ -199,6 +213,9 @@ docker run --rm \
   -v "$(pwd)/docs:/output" \
   ghcr.io/nikolareljin/docforge:latest
 ```
+
+This requires `.docforge.yml` (or an external `CONFIG_FILE`) with
+`ai.provider: "ollama"`.
 
 Config file:
 

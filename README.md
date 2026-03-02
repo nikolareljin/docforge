@@ -85,6 +85,11 @@ output:
 
 See [`docforge.example.yml`](docforge.example.yml) for the fully-commented version.
 
+If `.docforge.yml` is missing, docforge falls back to built-in defaults
+(`provider: github`, `model: gpt-4o`) and requires `GITHUB_TOKEN`.
+To run with any non-default provider (for example `ollama`), create
+`.docforge.yml` (or pass an explicit config path).
+
 ---
 
 ## Supported LLM Providers
