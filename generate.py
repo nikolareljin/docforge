@@ -149,8 +149,7 @@ def _resolve_timeout_seconds(ai_cfg: dict) -> tuple[int, str]:
 
     if timeout <= 0:
         print(
-            f"error: timeout from {source} must be greater than 0 "
-            f"(got {timeout}).",
+            f"error: timeout from {source} must be greater than 0 (got {timeout}).",
             file=sys.stderr,
         )
         sys.exit(1)
