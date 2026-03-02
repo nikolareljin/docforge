@@ -120,15 +120,15 @@ def _resolve_timeout_seconds(ai_cfg: dict) -> int:
     """Resolve request timeout with provider-aware defaults.
 
     Precedence:
-    1. ai.timeout_seconds in config
-    2. DOCFORGE_TIMEOUT_SECONDS environment variable
+    1. DOCFORGE_TIMEOUT_SECONDS environment variable
+    2. ai.timeout_seconds in config
     3. Provider default (ollama: 1800s, others: 120s)
     """
-    raw_timeout = ai_cfg.get("timeout_seconds")
-    if raw_timeout is None:
-        env_timeout = os.environ.get("DOCFORGE_TIMEOUT_SECONDS", "").strip()
-        if env_timeout:
-            raw_timeout = env_timeout
+    env_timeout = os.environ.get("DOCFORGE_TIMEOUT_SECONDS", "").strip()
+    if env_timeout:
+        raw_timeout = env_timeout
+    else:
+        raw_timeout = ai_cfg.get("timeout_seconds")
 
     if raw_timeout is None:
         provider = str(ai_cfg.get("provider", "github")).strip().lower()

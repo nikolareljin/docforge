@@ -148,7 +148,7 @@ For `ollama` (local) or `bedrock` (AWS), no key is needed.
 | `CONFIG_FILE` | `/repo/.docforge.yml` | Path to config file |
 | `REPO_PATH` | `/repo` | Repository root inside container |
 | `OUTPUT_DIR` | `/output` | Where to write docs inside container |
-| `DOCFORGE_TIMEOUT_SECONDS` | provider-dependent | Override LLM request timeout (default: `1800` for `ollama`, otherwise `120`) |
+| `DOCFORGE_TIMEOUT_SECONDS` | provider-dependent | Runtime override for request timeout (takes precedence over `ai.timeout_seconds`) |
 
 ---
 
