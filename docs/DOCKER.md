@@ -58,7 +58,7 @@ docker run --rm \
 
 ## Configuration
 
-### Option 1: Config file in the repository (recommended; required for non-default behavior)
+### Option 1: Config file in the repository (recommended; required for provider/model/prompt customization)
 
 Place `.docforge.yml` in your repository root:
 
@@ -122,7 +122,10 @@ You must provide a config file (in-repo or external via `CONFIG_FILE`) when you
 want anything non-default, for example:
 - `ai.provider: ollama`, `groq`, `anthropic`, `openrouter`, `together`, `bedrock`, or custom `openai_compat`
 - Non-default model selection
-- Custom `timeout_seconds`, context/output settings, or prompt paths
+- Custom context/output settings or prompt paths
+
+`DOCFORGE_TIMEOUT_SECONDS` is a runtime env override and can be used without
+editing `.docforge.yml`.
 
 ---
 

@@ -62,6 +62,7 @@ ai:
   model: "gpt-4o"
   max_tokens: 8192
   # timeout_seconds: 120  # optional; default is 1800 for ollama, 120 otherwise
+  # NOTE: DOCFORGE_TIMEOUT_SECONDS env var overrides ai.timeout_seconds at runtime.
 
 context:
   max_context_kb: 128

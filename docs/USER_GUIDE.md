@@ -194,6 +194,10 @@ ai:
   # timeout_seconds: 1800              # Optional; ollama default is already 1800s
 ```
 
+For one-off runs, you can override timeout without editing config:
+`DOCFORGE_TIMEOUT_SECONDS=3600 python vendor/docforge/generate.py --repo-path .`
+(`DOCFORGE_TIMEOUT_SECONDS` takes precedence over `ai.timeout_seconds`).
+
 No secrets needed. Run locally:
 
 ```bash
