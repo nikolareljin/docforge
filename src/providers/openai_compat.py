@@ -11,6 +11,7 @@ import time
 import httpx
 
 from .base import DocProvider, DocResult
+from .http import build_timeout
 
 
 _RETRY_STATUS_CODES = {429, 503, 529}
@@ -32,6 +33,7 @@ class OpenAICompatProvider(DocProvider):
 
     def generate(self, system: str, user: str, timeout: int = 120) -> DocResult:
         url = f"{self.base_url}/chat/completions"
+        timeout_cfg = build_timeout(timeout)
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "content-type": "application/json",
@@ -52,7 +54,7 @@ class OpenAICompatProvider(DocProvider):
                     url,
                     headers=headers,
                     json=payload,
-                    timeout=timeout,
+                    timeout=timeout_cfg,
                 )
                 if response.status_code in _RETRY_STATUS_CODES and attempt == 0:
                     time.sleep(_RETRY_DELAY_SECONDS)

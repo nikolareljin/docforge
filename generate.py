@@ -116,6 +116,47 @@ def _log(msg: str) -> None:
     print(msg, flush=True)
 
 
+def _resolve_timeout_seconds(ai_cfg: dict) -> tuple[int, str]:
+    """Resolve request timeout with provider-aware defaults.
+
+    Precedence:
+    1. DOCFORGE_TIMEOUT_SECONDS environment variable
+    2. ai.timeout_seconds in config
+    3. Provider default (ollama: 1800s, others: 120s)
+    """
+    env_timeout = os.environ.get("DOCFORGE_TIMEOUT_SECONDS", "").strip()
+    if env_timeout:
+        raw_timeout = env_timeout
+        source = "DOCFORGE_TIMEOUT_SECONDS"
+    else:
+        raw_timeout = ai_cfg.get("timeout_seconds")
+        source = "ai.timeout_seconds"
+
+    if raw_timeout is None:
+        provider = str(ai_cfg.get("provider", "github")).strip().lower()
+        timeout = 1800 if provider == "ollama" else 120
+        return timeout, "provider default"
+
+    try:
+        timeout = int(raw_timeout)
+    except (TypeError, ValueError):
+        print(
+            f"error: invalid timeout from {source}: {raw_timeout!r}. "
+            "Expected a positive integer.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    if timeout <= 0:
+        print(
+            f"error: timeout from {source} must be greater than 0 (got {timeout}).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    return timeout, source
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="docforge",
@@ -204,6 +245,8 @@ def main() -> None:
     user_guide_text: str = ""
 
     ai_label = f"{ai_cfg.get('provider', 'github')} / {ai_cfg.get('model', 'gpt-4o')}"
+    request_timeout, timeout_source = _resolve_timeout_seconds(ai_cfg)
+    _log(f"[docforge] Request timeout: {request_timeout}s ({timeout_source})")
 
     if generate in ("developer", "both"):
         prompt_path = _resolve_prompt_path(
@@ -211,7 +254,12 @@ def main() -> None:
             action_path,
         )
         _log(f"[docforge] Generating DEVELOPER.md ({ai_label})...")
-        result = gen.generate_from_prompt_file(prompt_path, context_text, action_path)
+        result = gen.generate_from_prompt_file(
+            prompt_path,
+            context_text,
+            action_path,
+            timeout=request_timeout,
+        )
         developer_text = result.text
         out = writer.write_developer(developer_text)
         _log(
@@ -224,7 +272,12 @@ def main() -> None:
             action_path,
         )
         _log(f"[docforge] Generating USER_GUIDE.md ({ai_label})...")
-        result = gen.generate_from_prompt_file(prompt_path, context_text, action_path)
+        result = gen.generate_from_prompt_file(
+            prompt_path,
+            context_text,
+            action_path,
+            timeout=request_timeout,
+        )
         user_guide_text = result.text
         out = writer.write_user_guide(user_guide_text)
         _log(

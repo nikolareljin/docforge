@@ -21,6 +21,9 @@ docker run --rm \
 
 Docs appear in `./docs/`.
 
+This quick start uses the default provider (`github`), so `GITHUB_TOKEN` must
+be set in your environment.
+
 ---
 
 ## Image Tags
@@ -55,7 +58,7 @@ docker run --rm \
 
 ## Configuration
 
-### Option 1: Config file in the repository (recommended)
+### Option 1: Config file in the repository (recommended; required for provider/model/prompt customization)
 
 Place `.docforge.yml` in your repository root:
 
@@ -95,10 +98,10 @@ docker run --rm \
   ghcr.io/nikolareljin/docforge:latest
 ```
 
-### Option 3: Default config (no customization)
+### Option 3: Default config (no `.docforge.yml`)
 
 If no `.docforge.yml` exists, the image uses the built-in default config
-(`docforge.example.yml`). Set the project name via environment variables:
+(`docforge.example.yml`):
 
 ```bash
 docker run --rm \
@@ -108,7 +111,21 @@ docker run --rm \
   ghcr.io/nikolareljin/docforge:latest
 ```
 
-The default provider is `github` with model `gpt-4o`.
+Defaults in this mode:
+- Provider: `github`
+- Model: `gpt-4o`
+- Requirement: `GITHUB_TOKEN` must be set
+
+### When `.docforge.yml` is required
+
+You must provide a config file (in-repo or external via `CONFIG_FILE`) when you
+want anything non-default, for example:
+- `ai.provider: ollama`, `groq`, `anthropic`, `openrouter`, `together`, `bedrock`, or custom `openai_compat`
+- Non-default model selection
+- Custom context/output settings or prompt paths
+
+`DOCFORGE_TIMEOUT_SECONDS` is a runtime env override and can be used without
+editing `.docforge.yml`.
 
 ---
 
@@ -134,6 +151,7 @@ For `ollama` (local) or `bedrock` (AWS), no key is needed.
 | `CONFIG_FILE` | `/repo/.docforge.yml` | Path to config file |
 | `REPO_PATH` | `/repo` | Repository root inside container |
 | `OUTPUT_DIR` | `/output` | Where to write docs inside container |
+| `DOCFORGE_TIMEOUT_SECONDS` | provider-dependent | Runtime override for request timeout (takes precedence over `ai.timeout_seconds`) |
 
 ---
 
@@ -199,15 +217,31 @@ docker run --rm \
   ghcr.io/nikolareljin/docforge:latest
 ```
 
+This requires `.docforge.yml` (or an external `CONFIG_FILE`) with
+`ai.provider: "ollama"`.
+
 Config file:
 
 ```yaml
 ai:
   provider: "ollama"
   model: "qwen2.5:72b"
+  # Optional override. If omitted, ollama defaults to 1800s timeout.
+  timeout_seconds: 1800
 ```
 
 Ollama must be listening on `http://localhost:11434`.
+
+For very slow local models, you can also set a runtime override:
+
+```bash
+docker run --rm \
+  --network host \
+  -v "$(pwd):/repo:ro" \
+  -v "$(pwd)/docs:/output" \
+  -e DOCFORGE_TIMEOUT_SECONDS=3600 \
+  ghcr.io/nikolareljin/docforge:latest
+```
 
 ### AWS Bedrock
 

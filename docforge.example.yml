@@ -29,6 +29,13 @@ ai:
   # Maximum tokens in the model response. Increase for very large codebases.
   max_tokens: 8192
 
+  # Per-request timeout in seconds.
+  # If omitted, docforge uses provider-aware defaults:
+  #   - ollama: 1800 (30 min)
+  #   - others: 120
+  # Runtime override: DOCFORGE_TIMEOUT_SECONDS (env var) takes precedence.
+  # timeout_seconds: 1800
+
   # base_url: ""          # Required only for provider: openai_compat (custom endpoint)
   # aws_region: "us-east-1"  # AWS Bedrock only
   # aws_profile: ""          # AWS Bedrock only (default credential chain if omitted)

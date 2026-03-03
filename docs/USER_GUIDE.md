@@ -76,6 +76,7 @@ ai:
   provider: "github"                   # Default — uses GITHUB_TOKEN automatically
   model: "gpt-4o"                      # Model to use
   max_tokens: 8192                     # Max response length
+  # timeout_seconds: 120               # Optional request timeout override
 
   # Other provider examples:
   # provider: "groq"
@@ -190,7 +191,12 @@ Run Ollama locally and point docforge at it:
 ai:
   provider: "ollama"
   model: "qwen2.5:72b"
+  # timeout_seconds: 1800              # Optional; ollama default is already 1800s
 ```
+
+For one-off runs, you can override timeout without editing config:
+`DOCFORGE_TIMEOUT_SECONDS=3600 python vendor/docforge/generate.py --repo-path .`
+(`DOCFORGE_TIMEOUT_SECONDS` takes precedence over `ai.timeout_seconds`).
 
 No secrets needed. Run locally:
 

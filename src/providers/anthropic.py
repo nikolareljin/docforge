@@ -7,6 +7,7 @@ import time
 import httpx
 
 from .base import DocProvider, DocResult
+from .http import build_timeout
 
 
 _ANTHROPIC_MESSAGES_URL = "https://api.anthropic.com/v1/messages"
@@ -22,6 +23,7 @@ class AnthropicProvider(DocProvider):
         self.max_tokens = max_tokens
 
     def generate(self, system: str, user: str, timeout: int = 120) -> DocResult:
+        timeout_cfg = build_timeout(timeout)
         headers = {
             "x-api-key": self.api_key,
             "anthropic-version": _ANTHROPIC_VERSION,
@@ -41,7 +43,7 @@ class AnthropicProvider(DocProvider):
                     _ANTHROPIC_MESSAGES_URL,
                     headers=headers,
                     json=payload,
-                    timeout=timeout,
+                    timeout=timeout_cfg,
                 )
                 if response.status_code in _RETRY_STATUS_CODES and attempt == 0:
                     time.sleep(_RETRY_DELAY_SECONDS)

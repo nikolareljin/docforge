@@ -61,6 +61,8 @@ ai:
   provider: "github"   # default — uses GITHUB_TOKEN automatically
   model: "gpt-4o"
   max_tokens: 8192
+  # timeout_seconds: 120  # optional; default is 1800 for ollama, 120 otherwise
+  # NOTE: DOCFORGE_TIMEOUT_SECONDS env var overrides ai.timeout_seconds at runtime.
 
 context:
   max_context_kb: 128
@@ -83,6 +85,14 @@ output:
 ```
 
 See [`docforge.example.yml`](docforge.example.yml) for the fully-commented version.
+
+When running `generate.py` locally without `--config`, if `.docforge.yml` is
+missing, docforge falls back to built-in defaults (`provider: github`,
+`model: gpt-4o`) and requires `GITHUB_TOKEN`.
+The GitHub Action defaults to `config: .docforge.yml`, so it will fail if that
+file is missing unless you override the action `config` input.
+To run with any non-default provider (for example `ollama`), create
+`.docforge.yml` (or pass an explicit config path).
 
 ---
 
