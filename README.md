@@ -201,3 +201,11 @@ See [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md#notebooklm-auto-upload) for setup.
 ## License
 
 MIT
+
+---
+
+## Clone traffic
+
+![Clone traffic](https://raw.githubusercontent.com/nikolareljin/stats/main/charts/docforge.svg)
+
+_Updated daily. Total and unique cloners over the last 14 days._
