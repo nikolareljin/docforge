@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docforge — documentation generated with your code</title>
+  <meta name="description" content="Generate developer and end-user documentation from any codebase in GitHub Actions, with NotebookLM-ready output.">
+  <meta property="og:title" content="Docforge">
+  <meta property="og:description" content="Documentation generated with your code, not after it.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nikolareljin.github.io/docforge/">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar"><div class="wrap"><a class="brand" href="#top">nr/<span>docforge</span></a><nav aria-label="Primary navigation"><a href="#features">Features</a><a href="#install">Install</a><a class="optional" href="#providers">Providers</a><a href="https://github.com/nikolareljin/docforge">GitHub</a></nav></div></header>
+<main id="top">
+  <div class="hero wrap">
+    <p class="eyebrow">Standalone documentation automation</p>
+    <h1>Docs that move with the code.</h1>
+    <p class="lede">Vendor one GitHub Action into a repository and continuously generate a developer reference, an end-user guide, and a NotebookLM-ready source.</p>
+    <div class="actions"><a class="button primary" href="#install">Install Docforge</a><a class="button" href="https://github.com/nikolareljin/docforge/tree/main/docs">Read the guides</a></div>
+    <div class="signal" aria-label="Docforge highlights"><div><strong>two audiences</strong><span>Developer and end-user documentation stay separate.</span></div><div><strong>seven providers</strong><span>Choose hosted, local, or OpenAI-compatible models.</span></div><div><strong>one workflow</strong><span>Generation runs whenever the source changes.</span></div></div>
+  </div>
+  <section id="features"><div class="wrap"><div class="section-head"><p class="eyebrow">What it produces</p><h2>Useful output, already organized.</h2><p>Docforge inspects the repository context you select and writes predictable Markdown artifacts back to the project.</p></div><div class="grid"><article class="card"><h3>Developer reference</h3><p>Setup, architecture, APIs, extension points, configuration, and testing in <code>docs/DEVELOPER.md</code>.</p></article><article class="card"><h3>User guide</h3><p>Features, task-oriented instructions, examples, and troubleshooting in <code>docs/USER_GUIDE.md</code>.</p></article><article class="card"><h3>NotebookLM source</h3><p>A combined, attributed source in <code>docs/NOTEBOOKLM.md</code>, with optional direct upload.</p></article></div></div></section>
+  <section id="install"><div class="wrap"><div class="section-head"><p class="eyebrow">Quick install</p><h2>Add it from the project root.</h2><p>The installer adds Docforge as <code>vendor/docforge</code>, creates configuration, and installs the workflow.</p></div><div class="terminal"><div class="terminal-label">Terminal</div><pre><code>curl -fsSL https://raw.githubusercontent.com/nikolareljin/docforge/main/install.sh | bash
+
+# review generated configuration before committing
+git diff -- .gitmodules .docforge.yml .github/workflows/docs.yml</code></pre></div><p class="note">Review remote scripts before piping them to a shell. The <a href="https://github.com/nikolareljin/docforge#manual-install">manual submodule installation</a> provides the same result step by step.</p></div></section>
+  <section id="providers"><div class="wrap"><div class="section-head"><p class="eyebrow">Provider choice</p><h2>Hosted, local, or compatible.</h2><p>The default GitHub Models provider uses the workflow token. Other providers use their own secret or local endpoint.</p></div><div class="grid"><article class="card"><h3>Zero-secret default</h3><p>GitHub Models receives <code>GITHUB_TOKEN</code> automatically from the Actions runner.</p></article><article class="card"><h3>Hosted alternatives</h3><p>Use Groq, Anthropic, Together, OpenRouter, Bedrock, or an OpenAI-compatible endpoint.</p></article><article class="card"><h3>Local inference</h3><p>Choose Ollama for local runs where repository context must stay on your machine.</p></article></div></div></section>
+  <section id="ecosystem"><div class="wrap"><div class="section-head"><p class="eyebrow">Related tools</p><h2>Prefer a guided Claude Code workflow?</h2><p>Docforge is standalone automation—not a Claude Code plugin. Claude Docsmith provides an interactive, screenshot-aware documentation workflow inside Claude Code.</p></div><div class="grid"><article class="card suite-card"><span class="tag">Claude Code plugin</span><h3>Claude Docsmith</h3><p>Plan or write separate user and developer documentation with interactive review and optional local tooling.</p><a href="https://nikolareljin.github.io/claude-docsmith/">Explore Docsmith →</a></article><article class="card suite-card"><span class="tag">Plugin marketplace</span><h3>More Claude tools</h3><p>Browse security, documentation, and media plugins through one marketplace.</p><a href="https://nikolareljin.github.io/claude-plugins/">Visit the plugin suite →</a></article><article class="card"><h3>Detailed guides</h3><p>Configuration, Docker, multi-repository setup, NotebookLM, and internals live with the source.</p><a href="https://github.com/nikolareljin/docforge/tree/main/docs">Browse documentation →</a></article></div></div></section>
+</main>
+<footer><div class="wrap"><p>Docforge is standalone, MIT-licensed documentation automation.</p><div class="footer-links"><a href="https://github.com/nikolareljin/docforge">Repository</a><a href="https://github.com/nikolareljin/docforge/issues">Issues</a></div></div></footer>
+</body>
+</html>
