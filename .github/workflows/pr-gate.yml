@@ -12,7 +12,7 @@ jobs:
     uses: nikolareljin/ci-helpers/.github/workflows/pr-gate.yml@production
     with:
       python_version: "3.11"
-      install_command: "pip install --quiet ruff && sudo apt-get install -y --quiet shellcheck"
+      install_command: "pip install --quiet ruff==0.15.12 && sudo apt-get install -y --quiet shellcheck"
       lint_command: "ruff check generate.py src/ && ruff format --check generate.py src/ && shellcheck install.sh"
       test_command: ""
       build_command: ""

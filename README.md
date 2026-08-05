@@ -1,11 +1,15 @@
 # docforge
 
+[![Website](https://img.shields.io/badge/docs-GitHub%20Pages-F5C451)](https://nikolareljin.github.io/docforge/)
+
 Auto-generate developer and end-user documentation from any codebase.
 Triggered by GitHub Actions on push to main/master. Output is optimized for
 [Google NotebookLM](https://notebooklm.google.com/) import.
 
 Designed to be vendored as a git submodule into any repository in your ecosystem.
 No API key secrets needed — the default provider uses `GITHUB_TOKEN` automatically.
+
+Project overview and quick start: <https://nikolareljin.github.io/docforge/>.
 
 ---
 
